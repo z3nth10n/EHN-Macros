@@ -2,6 +2,7 @@
 *.resx
 *.html
 *.nupkg
+*.csproj.user
 /EHN-Macros/bin/
 /EHN-Macros/obj/
 /packages/Selenium.WebDriver.3.141.0/lib/net35
