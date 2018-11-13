@@ -126,7 +126,7 @@ namespace EHN_Macros
                     var source = iso.GetBytes(web.PageSource);
 
                     // Guardaremos el source en el archivo correspondiente
-                    File.WriteAllBytes(Path.Combine(DownloadPath, $"Page-{fType}-{i}.html"), source);
+                    File.WriteAllBytes(Path.Combine(DownloadPath, $"Page-{fType.FirstCharToUpper()}-{i}.html"), source);
 
                     if (esBandejaDeEntrada)
                     {
@@ -156,7 +156,7 @@ namespace EHN_Macros
             }
             catch (Exception ex)
             {
-                MostrarExcepcion("Bandeja de entrada vacía", ex);
+                MostrarExcepcion($"{fType.FirstCharToUpper()} vacía", ex);
             }
         }
 
