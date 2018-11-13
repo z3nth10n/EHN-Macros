@@ -16,6 +16,12 @@ namespace EHN_Macros
 {
     internal class Program
     {
+        private enum Accion
+        {
+            GuardarBandejaEntrada = 1,
+            GuardarBandejaSalida
+        }
+
         private static Login login;
 
         private static string DownloadPath
@@ -44,7 +50,8 @@ namespace EHN_Macros
             }
 
             var menu = new Menu()
-              .Add("Guardar y borrar MPs de la bandeja de entrada", () => GuardarMPs())
+              .Add("Guardar y borrar MPs de la bandeja de entrada", () => Ejecutar(Accion.GuardarBandejaEntrada))
+              .Add("Guardar MPs de la bandeja de salida", () => Ejecutar(Accion.GuardarBandejaSalida))
               .Add("Salir", () => Environment.Exit(0));
 
             menu.Display();
@@ -52,7 +59,7 @@ namespace EHN_Macros
             Console.Read();
         }
 
-        private static void GuardarMPs()
+        private static void Ejecutar(Accion accion)
         {
             using (IWebDriver web = new ChromeDriver())
             {
@@ -74,35 +81,55 @@ namespace EHN_Macros
                     return;
                 }
 
-                // Vamos a la bandeja de mensajes
-
-                web.Navigate().GoToUrl("https://foro.elhacker.net/pm.html;f=inbox;sort=date;start=0");
-
-                // Buscamos el numero de páginas
-
-                ReadOnlyCollection<IWebElement> elements = web.FindElements(By.CssSelector("a.navPages"));
-
-                try
+                switch (accion)
                 {
-                    int numberOfPages = int.Parse(elements.Last().Text);
+                    case Accion.GuardarBandejaSalida:
+                    case Accion.GuardarBandejaEntrada:
+                        GuardarMPs(web, accion == Accion.GuardarBandejaEntrada);
+                        break;
 
-                    // Establecemos el encoding de la pagina
+                    default:
+                        Output.WriteLine(ConsoleColor.Red, "Accion no reconocida.");
+                        break;
+                }
+            }
+        }
 
-                    Encoding iso = Encoding.GetEncoding("ISO-8859-1");
+        private static void GuardarMPs(IWebDriver web, bool esBandejaDeEntrada)
+        {
+            string fType = esBandejaDeEntrada ? "inbox" : "outbox";
 
-                    // Recorremos de final a principio
+            // Vamos a la bandeja de mensajes
 
-                    for (int i = numberOfPages; i >= 1; ++i)
+            web.Navigate().GoToUrl($"https://foro.elhacker.net/pm.html;f={fType};sort=date;start=0");
+
+            // Buscamos el numero de páginas
+
+            ReadOnlyCollection<IWebElement> elements = web.FindElements(By.CssSelector("a.navPages"));
+
+            try
+            {
+                int numberOfPages = int.Parse(elements.Last().Text);
+
+                // Establecemos el encoding de la pagina
+
+                Encoding iso = Encoding.GetEncoding("ISO-8859-1");
+
+                // Recorremos de final a principio
+
+                for (int i = numberOfPages; i >= 1; ++i)
+                {
+                    // Empezaremos por la última página
+                    web.Navigate().GoToUrl($"https://foro.elhacker.net/pm.html;f={fType};sort=date;start={(i - 1) * 10}");
+
+                    // Obtendremos el source
+                    var source = iso.GetBytes(web.PageSource);
+
+                    // Guardaremos el source en el archivo correspondiente
+                    File.WriteAllBytes(Path.Combine(DownloadPath, $"Page-{fType}-{i}.html"), source);
+
+                    if (esBandejaDeEntrada)
                     {
-                        // Empezaremos por la última página
-                        web.Navigate().GoToUrl($"https://foro.elhacker.net/pm.html;f=inbox;sort=date;start={(i - 1) * 10}");
-
-                        // Obtendremos el source
-                        var source = iso.GetBytes(web.PageSource);
-
-                        // Guardaremos el source en el archivo correspondiente
-                        File.WriteAllBytes(Path.Combine(DownloadPath, $"Page{i}.html"), source);
-
 #if PURGE_MP
                         // Si esta directiva de preprocesador está activada, los mps de la página iterada serán borrados
                         try
@@ -126,10 +153,10 @@ namespace EHN_Macros
 #endif
                     }
                 }
-                catch (Exception ex)
-                {
-                    MostrarExcepcion("Bandeja de salida vacía", ex);
-                }
+            }
+            catch (Exception ex)
+            {
+                MostrarExcepcion("Bandeja de entrada vacía", ex);
             }
         }
 
