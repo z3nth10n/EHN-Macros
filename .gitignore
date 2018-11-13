@@ -1,0 +1,11 @@
+/.vs/
+*.resx
+*.html
+*.nupkg
+/EHN-Macros/bin/
+/EHN-Macros/obj/
+/packages/Selenium.WebDriver.3.141.0/lib/net35
+/packages/Selenium.WebDriver.3.141.0/lib/net40
+/packages/Selenium.WebDriver.3.141.0/lib/netstandard2.0
+/packages/Selenium.WebDriver.ChromeDriver.2.43.0/driver/mac64
+/packages/Selenium.WebDriver.ChromeDriver.2.43.0/driver/linux64
