@@ -117,7 +117,7 @@ namespace EHN_Macros
 
                 // Recorremos de final a principio
 
-                for (int i = numberOfPages; i >= 1; ++i)
+                for (int i = numberOfPages; i >= 1; --i)
                 {
                     // Empezaremos por la última página
                     web.Navigate().GoToUrl($"https://foro.elhacker.net/pm.html;f={fType};sort=date;start={(i - 1) * 10}");
@@ -156,14 +156,15 @@ namespace EHN_Macros
             }
             catch (Exception ex)
             {
-                MostrarExcepcion($"{fType.FirstCharToUpper()} vacía", ex);
+                MostrarExcepcion(elements.Count == 0 ? $"{fType.FirstCharToUpper()} vacía" : "", ex);
             }
         }
 
         private static void MostrarExcepcion(string msg, Exception ex = null)
         {
             Console.WriteLine();
-            Output.WriteLine(ConsoleColor.Red, msg);
+
+            Output.WriteLine(ConsoleColor.Red, !string.IsNullOrEmpty(msg) ? msg : "Ha ocurrido una excepción");
 
             if (ex != null)
             {
