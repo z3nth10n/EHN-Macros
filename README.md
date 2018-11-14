@@ -1,5 +1,4 @@
 # EHN-Macros
-================
 
 Con esta aplicación creada con unos cuantos plugins de .NET entre los 
 que se encuentran el CommandLineParser, el EasyConsole y el Selenium (y 
