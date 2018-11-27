@@ -21,7 +21,7 @@ queramos tener vacío.
 
 ![...](https://i.imgur.com/cz2FrIA.png)
 
-![...](https://imgur.com/a/vn7OlfG.gif)
+![...](https://media.giphy.com/media/wIJ0AM7v0hlEY76PZ8/giphy.gif)
 
 **Nota:** He dejado que compileis vosotros el proyecto para que veáis 
 que no 
